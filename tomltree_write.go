@@ -132,7 +132,7 @@ func (t *Tree) writeTo(w io.Writer, indent, keyspace string, bytesCount int64) (
 		}
 
 		var commented string
-		if v.commented {
+		if v.commented && v.vdefault == repr {
 			commented = "# "
 		}
 		writtenBytesCount, err := writeStrings(w, indent, commented, k, " = ", repr, "\n")

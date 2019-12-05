@@ -11,10 +11,11 @@ import (
 )
 
 type tomlValue struct {
-	value     interface{} // string, int64, uint64, float64, bool, time.Time, [] of any of this list
-	comment   string
+	value   interface{} // string, int64, uint64, float64, bool, time.Time, [] of any of this list
+	comment string
 	commented bool
-	position  Position
+	vdefault string
+	position Position
 }
 
 // Tree is the result of the parsing of a TOML file.
@@ -181,14 +182,14 @@ func (t *Tree) GetDefault(key string, def interface{}) interface{} {
 // Set an element in the tree.
 // Key is a dot-separated path (e.g. a.b.c).
 // Creates all necessary intermediate trees, if needed.
-func (t *Tree) Set(key string, comment string, commented bool, value interface{}) {
-	t.SetPath(strings.Split(key, "."), comment, commented, value)
+func (t *Tree) Set(key string, comment string, commented bool, vdefault string, value interface{}) {
+	t.SetPath(strings.Split(key, "."), comment, commented, "",value)
 }
 
 // SetPath sets an element in the tree.
 // Keys is an array of path elements (e.g. {"a","b","c"}).
 // Creates all necessary intermediate trees, if needed.
-func (t *Tree) SetPath(keys []string, comment string, commented bool, value interface{}) {
+func (t *Tree) SetPath(keys []string, comment string, commented bool, vdefault string, value interface{}) {
 	subtree := t
 	for _, intermediateKey := range keys[:len(keys)-1] {
 		nextTree, exists := subtree.values[intermediateKey]
@@ -221,9 +222,10 @@ func (t *Tree) SetPath(keys []string, comment string, commented bool, value inte
 	case *tomlValue:
 		tt := value.(*tomlValue)
 		tt.comment = comment
+		tt.vdefault = vdefault 
 		toInsert = tt
 	default:
-		toInsert = &tomlValue{value: value, comment: comment, commented: commented}
+		toInsert = &tomlValue{value: value, comment: comment, commented: commented, vdefault: vdefault}
 	}
 
 	subtree.values[keys[len(keys)-1]] = toInsert

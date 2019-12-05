@@ -13,6 +13,7 @@ import (
 type tomlOpts struct {
 	name      string
 	comment   string
+	vdefault   string
 	commented bool
 	include   bool
 	omitempty bool
@@ -150,7 +151,7 @@ func valueToTree(mtype reflect.Type, mval reflect.Value) (*Tree, error) {
 				if err != nil {
 					return nil, err
 				}
-				tval.Set(opts.name, opts.comment, opts.commented, val)
+				tval.Set(opts.name, opts.comment, opts.commented, opts.vdefault, val)
 			}
 		}
 	case reflect.Map:
@@ -160,7 +161,7 @@ func valueToTree(mtype reflect.Type, mval reflect.Value) (*Tree, error) {
 			if err != nil {
 				return nil, err
 			}
-			tval.Set(key.String(), "", false, val)
+			tval.Set(key.String(), "", false, "", val)
 		}
 	}
 	return tval, nil
@@ -451,12 +452,15 @@ func unwrapPointer(mtype reflect.Type, tval interface{}) (reflect.Value, error) 
 func tomlOptions(vf reflect.StructField) tomlOpts {
 	tag := vf.Tag.Get("toml")
 	parse := strings.Split(tag, ",")
-	var comment string
+	var comment, vdefault string
 	if c := vf.Tag.Get("comment"); c != "" {
 		comment = c
 	}
+	if c := vf.Tag.Get("default"); c != "" {
+		vdefault = c
+	}
 	commented, _ := strconv.ParseBool(vf.Tag.Get("commented"))
-	result := tomlOpts{name: vf.Name, comment: comment, commented: commented, include: true, omitempty: false}
+	result := tomlOpts{name: vf.Name, comment: comment, commented: commented, vdefault: vdefault, include: true, omitempty: false}
 	if parse[0] != "" {
 		if parse[0] == "-" && len(parse) == 1 {
 			result.include = false
