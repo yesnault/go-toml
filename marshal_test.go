@@ -602,7 +602,9 @@ func TestNestedCustomMarshaler(t *testing.T) {
 var commentTestToml = []byte(`
 # it's a comment on type
 [postgres]
-  # isCommented = "dvalue"
+  defaultNotCommented = "aabb"
+  # isCommented = "isCommented"
+  isNotCommented = "dvalue"
   noComment = "cvalue"
 
   # A comment on AttrB with a
@@ -631,8 +633,9 @@ func TestMarshalComment(t *testing.T) {
 		AttrA string `toml:"user" comment:"A comment on AttrA"`
 		AttrB string `toml:"password" comment:"A comment on AttrB with a\n break line"`
 		AttrC string `toml:"noComment"`
-		AttrD string `toml:"isCommented" commented:"true"`
+		AttrD string `toml:"isNotCommented" commented:"true"`
 		AttrE string `toml:"defaultNotCommented" commented:"true" default:"aaa"`
+		AttrF string `toml:"isCommented" commented:"true" default:"isCommented"`
 		My    []TypeC
 	}
 	type TypeA struct {
@@ -640,7 +643,7 @@ func TestMarshalComment(t *testing.T) {
 	}
 
 	ta := []TypeC{{My: "Foo"}, {My: "Baar"}}
-	config := TypeA{TypeB{AttrA: "avalue", AttrB: "bvalue", AttrC: "cvalue", AttrD: "dvalue", AttrE: "aaa", My: ta}}
+	config := TypeA{TypeB{AttrA: "avalue", AttrB: "bvalue", AttrC: "cvalue", AttrD: "dvalue", AttrE: "aabb", AttrF: "isCommented", My: ta}}
 	result, err := Marshal(config)
 	if err != nil {
 		t.Fatal(err)
