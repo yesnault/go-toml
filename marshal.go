@@ -13,7 +13,7 @@ import (
 type tomlOpts struct {
 	name      string
 	comment   string
-	vdefault   string
+	vdefault  string
 	commented bool
 	include   bool
 	omitempty bool

@@ -632,6 +632,7 @@ func TestMarshalComment(t *testing.T) {
 		AttrB string `toml:"password" comment:"A comment on AttrB with a\n break line"`
 		AttrC string `toml:"noComment"`
 		AttrD string `toml:"isCommented" commented:"true"`
+		AttrE string `toml:"defaultNotCommented" commented:"true" default:"aaa"`
 		My    []TypeC
 	}
 	type TypeA struct {
@@ -639,7 +640,7 @@ func TestMarshalComment(t *testing.T) {
 	}
 
 	ta := []TypeC{{My: "Foo"}, {My: "Baar"}}
-	config := TypeA{TypeB{AttrA: "avalue", AttrB: "bvalue", AttrC: "cvalue", AttrD: "dvalue", My: ta}}
+	config := TypeA{TypeB{AttrA: "avalue", AttrB: "bvalue", AttrC: "cvalue", AttrD: "dvalue", AttrE: "aaa", My: ta}}
 	result, err := Marshal(config)
 	if err != nil {
 		t.Fatal(err)
